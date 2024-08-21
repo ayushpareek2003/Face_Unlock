@@ -38,25 +38,28 @@ public:
     wxButton* lock_button;
     void back(wxCommandEvent& event);
     void Add_update(wxCommandEvent& event);
-    void unlock(wxCommandEvent& event);
+    void unlock_(wxCommandEvent& event);
     void lock(wxCommandEvent& event);
 
 };
 
 
 
-class face_data_frm_s : public wxFrame  //First frame on start (for collecting )
+class unlock : public wxFrame 
 {
 public:
-    face_data_frm_s(const wxString& title, const wxPoint& position, const wxSize& size);
+    unlock(const wxString& title, const wxPoint& position, const wxSize& size);
 
 
 
     wxPanel* panel_3;
     wxBoxSizer* m_sizer;
     wxTimer m_timer;
+    wxCheckListBox* checklist;
+    wxButton* s;
 
-    wxButton* Add_Data;
+
+    void Lock_FP();
 
 
 

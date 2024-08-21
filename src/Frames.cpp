@@ -1,5 +1,8 @@
-#include "Frames.hpp"
-#include "add_update.hpp"
+#include "Frames.h"
+#include "add_update.h"
+#include "opencv2/objdetect.hpp"
+#include <filesystem>
+#include <fstream>
 
 first_frm_m::first_frm_m(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600))
 {
@@ -119,6 +122,7 @@ second_frm_m::second_frm_m(const wxString& title, const wxPoint& position,const 
 
     //binding our buttons
     add_update_face_button->Bind(wxEVT_BUTTON,&second_frm_m::Add_update, this);
+    unlock_button->Bind(wxEVT_BUTTON, &second_frm_m::unlock_, this);
 
     // Set the sizer for panel_2
     panel_2->SetSizer(mainSizer);
@@ -139,19 +143,22 @@ void second_frm_m::Add_update(wxCommandEvent& event)
     ////if (flag == 1){
     ////    // agr flag=1 means ki data exist usko delete krengey uska code baadme
     ////}
-   
-    add_update call = add_update();
+    /*cv::CascadeClassifier face_cascade("D:\\harcascade\\haarcascade_frontalface_default.xml");*/
+    add_update call; 
     call.Data_au();
 
 
 }
 
 
-void second_frm_m::unlock(wxCommandEvent& event)
+void second_frm_m::unlock_(wxCommandEvent& event)
 {
-
-
-
+    unlock* frm_3 = new unlock("Face_ID", this->GetPosition(), this->GetSize());
+    frm_3->SetClientSize(this->GetSize());
+    frm_3->SetPosition(this->GetPosition());
+    frm_3->Show();
+    this->Hide();
+   
 }
 
 void second_frm_m::lock(wxCommandEvent& event)
@@ -160,14 +167,63 @@ void second_frm_m::lock(wxCommandEvent& event)
 
 }
 
-face_data_frm_s::face_data_frm_s(const wxString& title,const wxPoint& point,const wxSize& size) :wxFrame(nullptr, wxID_ANY, title)  //setting up face data (first launch and in feature selection)
+unlock::unlock(const wxString& title,const wxPoint& point,const wxSize& size) :wxFrame(nullptr, wxID_ANY, title)  
+//setting up face data (first launch and in feature selection)
 {
 
-    panel_3 = new wxPanel(this, wxID_ANY);
+    // Create the main panel
+    wxPanel* panel_3 = new wxPanel(this, wxID_ANY,this->GetPosition(), this->GetSize());
     panel_3->SetBackgroundColour(*wxBLACK);
-    m_sizer = new wxBoxSizer(wxVERTICAL);
-    m_sizer->Add(panel_3, 1, wxEXPAND);
-    SetSizer(m_sizer);
-    m_timer.Start(30);
+
+
+
+    // Create the main horizontal sizer
+    wxBoxSizer* m_sizer = new wxBoxSizer(wxHORIZONTAL);
+    
+
+    // Create the checklist and its vertical sizer
+    wxBoxSizer* checklistsiz = new wxBoxSizer(wxVERTICAL);
+    checklist = new wxCheckListBox(panel_3, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+
+    // Add stretch spacers to center the checklist vertically
+    checklistsiz->AddStretchSpacer(1);
+    checklistsiz->Add(checklist, 0, wxALL | wxEXPAND, 5);
+    checklistsiz->AddStretchSpacer(1);
+
+    // Add the checklist sizer to the panel's sizer
   
+
+    // Add the panel to the main sizer with specific proportions
+    m_sizer->Add(panel_3, 1, wxEXPAND | wxALL, 5);
+
+    // Optionally add a stretch spacer to push the checklist to the left
+    m_sizer->AddStretchSpacer(1);
+
+    // Set the main sizer and trigger the layout recalculation
+    this->SetSizerAndFit(m_sizer);
+    this->Layout();
+
+  
+}
+
+void unlock::Lock_FP() {
+    
+  
+    const std::string path = "Path_to_file_conatining paths of locked folders";
+    std::ifstream filesys(path);
+    std::vector<std::string> paths;
+    int a;
+    filesys >> a;
+
+    for (int i = 0; i < a; i++) {
+        std::string temp;
+        filesys >> temp;
+        paths.push_back(temp);
+
+
+    }
+
+
+
+
 }
