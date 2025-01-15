@@ -12,14 +12,24 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-
+#include "modifyACL.hpp"
+#include "infer_cuDNN.hpp"
 
 int height;
 int width;
 
+
+
+    std::string pathToYolo = "D:\\FACE_DUMMY\\assets\\yolov8n-face.onnx";
+    std::string pathToFacenet = "D:\\face_id_workshop\\faceNet.onnx";
+
+    infer_cuDNN faceInfer(pathToYolo, pathToFacenet);
+
+
+
 int main() {
 
-   
+
     mainScreen();
 
     return 0;
@@ -44,7 +54,13 @@ void onMouseClick(int event, int x, int y, int flags, void* userdata) {
             mainScreen();
         }
         else if (button3.contains(clickPoint)) {
-            std::cout << "Button 3 clicked!" << std::endl;
+            cv::destroyWindow("Face ID");
+            Lock();
+            cv::destroyAllWindows();
+            mainScreen();
+            
+            
+
         }
         else if (button4.contains(clickPoint)) {
             std::cout << "Button 4 clicked!" << std::endl;
@@ -96,7 +112,7 @@ void mainScreen() {
         cv::imshow("Face ID", displayImage);
        
 
-        char key = (char)cv::waitKey(10);
+        char key = (char)cv::waitKey(0);
         if (key == 'q' || key == 27) {
             break;
         }
@@ -111,26 +127,90 @@ void Face_Data_Frame() {
     
 
     ///onnx model for infer using dnn or tensor rt which ever is fast
+    std::string out = "ADD/UPDATE";
+    int sam=faceInfer.instructionFrames(out);
     cv::VideoCapture cam(0);
     cv::namedWindow("Face Data", cv::WINDOW_AUTOSIZE);
+    std::vector<cv::Mat> selectedFaces;
+    int f = 0;
     while (true) {
-        cv::Mat frm;
-        cam>> frm;
+        cv::Mat inpFrame;
+        cam>> inpFrame;
 
-        if (frm.empty()) {
+        if (inpFrame.empty()) {
             std::cerr<<"WEBCAM khrab h tera" << std::endl;
         }
-        cv::flip(frm, frm, 1);
-        cv::imshow("Face Data", frm);
+        cv::flip(inpFrame, inpFrame, 1);
 
-        if (cv::waitKey(1) == 'q') {
+
+        cv::Mat temp= faceInfer.faceROI(inpFrame);
+        cv::Mat faceFinal;
+        for (int j = 0; j < temp.rows; j++) {
+
+            if (temp.at<float>(j, 4) > 0.5) {
+
+                int x = static_cast<int>(temp.at<float>(j, 0) * inpFrame.cols);
+                int y = static_cast<int>(temp.at<float>(j, 1) * inpFrame.rows);
+                int X = static_cast<int>(temp.at<float>(j, 2) * inpFrame.cols);
+                int Y = static_cast<int>(temp.at<float>(j, 3) * inpFrame.rows);
+
+
+                float shrinkFactor = 0.8;
+
+                int newWidth = static_cast<int>(X * shrinkFactor);
+                int newHeight = static_cast<int>(Y * shrinkFactor);
+
+
+                int newX = x + (X - newWidth) / 2;
+                int newY = y + (Y - newHeight) / 2;
+
+                if (newX >= 0 && newY >= 0 && newWidth > 0 && newHeight > 0 &&
+                    newX + newWidth <= inpFrame.cols && newY + newHeight <= inpFrame.rows) {
+
+                    faceFinal = inpFrame(cv::Rect(newX, newY, newWidth, newHeight)).clone();
+                }
+
+                cv::rectangle(inpFrame, cv::Point(newX, newY), cv::Point(newX + newWidth, newY + newHeight), cv::Scalar(0, 255, 0), 2);
+                
+            }
+
+        }
+
+        cv::imshow("Face Data", inpFrame);
+       
+        cv::Mat backupFace;
+        int key = cv::waitKey(1);
+        if (key == 'q') {
             break;
         }
+        else if (key == ' ') {
+
+            if (faceFinal.rows>0) {
+                f = 1;
+                backupFace = faceFinal.clone();
+                cv::imshow("Selected Frame", faceFinal);
+
+                cv::imwrite("D:\\PRojects\\Media_Face_ID\\FaceData.png", backupFace);
+            }
+
+        }
+
+
+        
+
 
 
     }
 
     cv::destroyWindow("Face Data");
+
+    if (f == 1) {
+        cv::destroyWindow("Selected Frame");
+    }
+
+
+    
+
    
 
     return;
@@ -168,9 +248,13 @@ void unLock()
             pathFolder += key;
 
         }
-        
 
     }
+
+    std::cout << pathFolder << std::endl;
+    
+    int status=unlockFolder(pathFolder);
+   
 
 }
 
@@ -189,18 +273,65 @@ bool folderExists(const std::string& path) {
 
 void Lock()
 {
-    std::string pathtoFolder = inputBOX();
-    struct stat info;
-    stat(pathtoFolder.c_str(), &info);
+    cv::Mat image = cv::imread("D:\\PRojects\\Media_Face_ID\\FaceData.png");  // Try to load the image
+    if (image.empty()) {
+        int sam=faceInfer.instructionFrames("NoData");
+        if (sam == 1) {
+            Face_Data_Frame();
 
-    if (info.st_mode && S_IFDIR) {
+        }
+
+        return ;  // Image could not be loaded
+    }
+    
 
 
 
+
+    cv::Mat backGround = cv::Mat::ones(height, width, CV_8UC1) * 255;
+    cv::putText(backGround, "Enter The Path and Press ESC once done ", cv::Point(150, 150), cv::FONT_HERSHEY_PLAIN, 1.5, cv::Scalar(0, 0, 0), 2);
+    std::string pathFolder = "";
+
+    while (true) {
+        cv::Mat temp = backGround.clone();
+        cv::putText(temp, pathFolder, cv::Point(150, 350), cv::FONT_HERSHEY_SCRIPT_COMPLEX, 1, cv::Scalar(0, 0, 0), 2);
+
+
+        cv::imshow("Unlock", temp);
+        int key = cv::waitKey(0);
+
+        if (key == 27) {
+
+            break;
+        }
+        else if (key == 8) {
+            pathFolder.pop_back();
+        }
+
+        else {
+            pathFolder += key;
+
+        }
 
 
 
     }
+    std::cout << pathFolder << std::endl;
+    
+    int status = lockFolder(pathFolder);
+
+    std::string res="Locked Successfully";
+    if (status == 1) {
+        res = "failed";
+    }
+    //cv::destroyAllWindows();
+    //backGround = cv::Mat::ones(height, width, CV_8UC1) * 255;
+    //cv::putText(backGround, res, cv::Point(150, 350), cv::FONT_HERSHEY_COMPLEX, 3, cv::Scalar(0, 0, 0), 2);
+    //cv::imshow("Face Unlock", backGround);
+    //std::this_thread::sleep_for(std::chrono::seconds(2));
+
+
+    
     
 
 }

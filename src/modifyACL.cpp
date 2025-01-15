@@ -51,6 +51,9 @@ int lockFolder(const std::string& folderPath) {
 
 
     if (result != ERROR_SUCCESS) {
+        if (pNewDACL) {
+            LocalFree(pNewDACL);
+        }
         return 1;
     }
     else {
