@@ -19,19 +19,20 @@ int height;
 int width;
 
 
+std::string pathToLocked = "D:\\PRojects\\Media_Face_ID\\folder.txt";
+std::string pathToYolo = "D:\\FACE_DUMMY\\assets\\yolov8n-face.onnx";
+std::string pathToFacenet = "D:\\face_id_workshop\\faceNet.onnx";
 
-    std::string pathToYolo = "D:\\FACE_DUMMY\\assets\\yolov8n-face.onnx";
-    std::string pathToFacenet = "D:\\face_id_workshop\\faceNet.onnx";
-
-    infer_cuDNN faceInfer(pathToYolo, pathToFacenet);
+infer_cuDNN faceInfer(pathToYolo, pathToFacenet);
 
 
 
 int main() {
-
+    fill();
+    
 
     mainScreen();
-
+    empty();
     return 0;
 }
 
@@ -129,95 +130,8 @@ void Face_Data_Frame() {
     ///onnx model for infer using dnn or tensor rt which ever is fast
     std::string out = "ADD/UPDATE";
     int sam=faceInfer.instructionFrames(out);
-    cv::VideoCapture cam(0);
-    cv::namedWindow("Face Data", cv::WINDOW_AUTOSIZE);
-    std::vector<cv::Mat> selectedFaces;
-    int f = 0;
-    while (true) {
-        cv::Mat inpFrame;
-        cam>> inpFrame;
 
-        if (inpFrame.empty()) {
-            std::cerr<<"WEBCAM khrab h tera" << std::endl;
-        }
-        cv::flip(inpFrame, inpFrame, 1);
-
-
-        cv::Mat temp= faceInfer.faceROI(inpFrame);
-        cv::Mat faceFinal;
-        for (int j = 0; j < temp.rows; j++) {
-
-            if (temp.at<float>(j, 4) > 0.5) {
-
-                int x = static_cast<int>(temp.at<float>(j, 0) * inpFrame.cols);
-                int y = static_cast<int>(temp.at<float>(j, 1) * inpFrame.rows);
-                int X = static_cast<int>(temp.at<float>(j, 2) * inpFrame.cols);
-                int Y = static_cast<int>(temp.at<float>(j, 3) * inpFrame.rows);
-
-
-                float shrinkFactor = 0.8;
-
-                int newWidth = static_cast<int>(X * shrinkFactor);
-                int newHeight = static_cast<int>(Y * shrinkFactor);
-
-
-                int newX = x + (X - newWidth) / 2;
-                int newY = y + (Y - newHeight) / 2;
-
-                if (newX >= 0 && newY >= 0 && newWidth > 0 && newHeight > 0 &&
-                    newX + newWidth <= inpFrame.cols && newY + newHeight <= inpFrame.rows) {
-
-                    faceFinal = inpFrame(cv::Rect(newX, newY, newWidth, newHeight)).clone();
-                }
-
-                cv::rectangle(inpFrame, cv::Point(newX, newY), cv::Point(newX + newWidth, newY + newHeight), cv::Scalar(0, 255, 0), 2);
-                
-            }
-
-        }
-
-        cv::imshow("Face Data", inpFrame);
-       
-        cv::Mat backupFace;
-        int key = cv::waitKey(1);
-        if (key == 'q') {
-            break;
-        }
-        else if (key == ' ') {
-
-            if (faceFinal.rows>0) {
-                f = 1;
-                backupFace = faceFinal.clone();
-                cv::imshow("Selected Frame", faceFinal);
-
-                cv::imwrite("D:\\PRojects\\Media_Face_ID\\FaceData.png", backupFace);
-            }
-
-        }
-
-
-        
-
-
-
-    }
-
-    cv::destroyWindow("Face Data");
-
-    if (f == 1) {
-        cv::destroyWindow("Selected Frame");
-    }
-
-
-    
-
-   
-
-    return;
-
-
-
-
+    cv::Mat out2 = faceInfer.unlockFace(0);
 
 
 }
@@ -228,6 +142,8 @@ void unLock()
     cv::putText(backGround, "Enter The Path and Press ESC once done ", cv::Point(150, 150),cv::FONT_HERSHEY_PLAIN, 1.5, cv::Scalar(0, 0, 0), 2);
     std::string pathFolder = "";
     
+    
+
     while (true) {
         cv::Mat temp = backGround.clone();
         cv::putText(temp, pathFolder, cv::Point(150, 350), cv::FONT_HERSHEY_SCRIPT_COMPLEX, 1, cv::Scalar(0, 0, 0), 2);
@@ -251,11 +167,31 @@ void unLock()
 
     }
 
-    std::cout << pathFolder << std::endl;
-    
-    int status=unlockFolder(pathFolder);
-   
+    //if (lockedFolder.find(pathFolder) == lockedFolder.end()){
+    //        // Raise  Error //
+    //}
+    //lockedFolder.erase(pathFolder);
+    int trys = 10;
 
+    while (trys) {
+
+        cv::Mat inp = faceInfer.unlockFace(1);
+
+        if (faceInfer.recogFace(inp)) {
+            trys = 0;
+            int status = unlockFolder(pathFolder);
+            //status wrong
+
+        }
+        trys--;
+        
+
+    }
+
+
+    
+ 
+  
 }
 
 bool folderExists(const std::string& path) {
@@ -319,6 +255,8 @@ void Lock()
     std::cout << pathFolder << std::endl;
     
     int status = lockFolder(pathFolder);
+    lockedFolder[pathFolder] = 1;
+
 
     std::string res="Locked Successfully";
     if (status == 1) {
@@ -333,6 +271,46 @@ void Lock()
 
     
     
+
+}
+
+void fill() {
+    std::ifstream inFile(pathToLocked);
+
+    if (inFile.is_open()) {
+        std::string key;
+        while (getline(inFile, key)) {
+            std::cout << key << std::endl;
+            lockedFolder[key] = 1;  // Assign default value (0) to each key
+        }
+        inFile.close();
+        std::cout << "Keys loaded from file successfully!" << std::endl;
+    }
+    else {
+        std::cerr << "Error opening file for reading!" << std::endl;
+    }
+    
+
+
+
+
+}
+
+void empty() {
+    
+
+    std::ofstream outFile(pathToLocked);
+
+    if (outFile.is_open()) {
+        for (const auto& pair : lockedFolder) {
+            outFile << pair.first << std::endl;  // Save both key and value
+        }
+        outFile.close();
+        std::cout << "Keys and values saved to file successfully!" << std::endl;
+    }
+    else {
+        std::cerr << "Error opening file for writing!" << std::endl;
+    }
 
 }
 

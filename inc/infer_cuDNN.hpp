@@ -20,6 +20,8 @@ public:
 
 	int instructionFrames(std::string ins);
 
+	std::vector<float> embGen(cv::Mat img);
 
+	cv::Mat unlockFace(int amount);
 };
 

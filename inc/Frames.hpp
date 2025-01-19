@@ -1,7 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 
-
+#include <fstream>
 
 
 #define buttonWidth 150
@@ -10,6 +10,8 @@
 #define baseHeight 120
 #define baseWidth 600
 
+
+std::map<std::string,int> lockedFolder;
 
 cv::Rect button1 = cv::Rect(550, baseHeight, buttonWidth + 50, buttonHeight);
 cv::Rect button2 = cv::Rect(baseWidth, baseHeight + buttonHeight + spacing, buttonWidth, buttonHeight);
@@ -27,6 +29,10 @@ void unLock();
 
 void Lock();
 
+
+void fill();
+
+void empty();
 
 
 
