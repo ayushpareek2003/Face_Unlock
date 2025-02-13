@@ -54,15 +54,12 @@ cmake --build  --config Release
 ```
 FaceUnlock-Windows/
 │── src/                  # Source Code (OOP-based)
-│   ├── maincpp          # Entry point
-│   ├── FaceDetectorcpp  # YOLOv8 face detection logic
-│   ├── FaceRecognizercpp # FaceNet recognition logic
-│   ├── ACLManagercpp    # Windows ACL integration
-│   ├── GUIcpp           # OpenCV-based GUI
+│   ├── Frames.cpp          # Entry point
+│   ├── Input_Box.cpp  # YOLOv8 face detection logic
+│   ├── infer_cuDNN.cpp # FaceNet recognition logic
+│   ├── modifyACL.cpp    # Windows ACL integration
 │── include/              # Header files
-│── models/               # YOLOv8 and FaceNet models
-│── cmake/                # CMake configuration
-│── assets/               # UI assets if needed
+│── cmake                 # CMake file
 │── READMEmd             # Project documentation
 ```
 
