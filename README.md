@@ -28,7 +28,7 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 ## Installation & Setup
 ### 1 Clone the Repository
 ```sh
-git clone https://githubcom/yourusername/FaceUnlock-Windowsgit
+git clone https://github.com/ayushpareek2003/face_unlock.git
 cd FaceUnlock-Windows
 ```
 
