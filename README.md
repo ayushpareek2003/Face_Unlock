@@ -1,16 +1,16 @@
 # FaceUnlock for Windows
 
 ## Overview
-FaceUnlock for Windows is a facial recognition-based authentication system built using **C++**. It leverages **OpenCV (compiled with CUDA)** for real-time face detection and recognition, integrates **Access Control Lists (ACLs)** for security, and provides a **GUI using OpenCV**. The detection model is **YOLOv8**, and recognition is handled using **FaceNet**. The entire project follows an **Object-Oriented Programming (OOP)** approach and is managed using **CMake**.
+FaceUnlock for Windows is a facial recognition-based authentication system built using **C++** It leverages **OpenCV (compiled with CUDA)** for real-time face detection and recognition, integrates **Access Control Lists (ACLs)** for security, and provides a **GUI using OpenCV** The detection model is **YOLOv8**, and recognition is handled using **FaceNet** The entire project follows an **Object-Oriented Programming (OOP)** approach and is managed using **CMake**
 
 ## Features
-- **Real-time Face Detection** using YOLOv8.
-- **Face Recognition** using FaceNet.
-- **High-performance computation** with OpenCV compiled with CUDA.
-- **Windows Access Control List (ACL) integration** for secure authentication.
-- **Object-Oriented Codebase** for modular and scalable design.
-- **GUI interface** built with OpenCV.
-- **CMake-based Build System** for easy compilation and deployment.
+- **Real-time Face Detection** using YOLOv8
+- **Face Recognition** using FaceNet
+- **High-performance computation** with OpenCV compiled with CUDA
+- **Windows Access Control List (ACL) integration** for secure authentication
+- **Object-Oriented Codebase** for modular and scalable design
+- **GUI interface** built with OpenCV
+- **CMake-based Build System** for easy compilation and deployment
 
 ## Requirements
 ### Hardware
@@ -26,27 +26,27 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 - **Windows SDK** (for ACL integration)
 
 ## Installation & Setup
-### 1. Clone the Repository
+### 1 Clone the Repository
 ```sh
-git clone https://github.com/yourusername/FaceUnlock-Windows.git
+git clone https://githubcom/yourusername/FaceUnlock-Windowsgit
 cd FaceUnlock-Windows
 ```
 
-### 2. Build the Project
+### 2 Build the Project
 
 #### Using CMake
 
 ```sh
 mkdir build
 cd build
-cmake ..
-cmake --build . --config Release
+cmake 
+cmake --build  --config Release
 ```
 
-### 3. Run the Application
+### 3 Run the Application
 
 ```sh
-./FaceUnlock
+/FaceUnlock
 ```
 
 ## Project Structure
@@ -54,39 +54,36 @@ cmake --build . --config Release
 ```
 FaceUnlock-Windows/
 │── src/                  # Source Code (OOP-based)
-│   ├── main.cpp          # Entry point
-│   ├── FaceDetector.cpp  # YOLOv8 face detection logic
-│   ├── FaceRecognizer.cpp # FaceNet recognition logic
-│   ├── ACLManager.cpp    # Windows ACL integration
-│   ├── GUI.cpp           # OpenCV-based GUI
+│   ├── maincpp          # Entry point
+│   ├── FaceDetectorcpp  # YOLOv8 face detection logic
+│   ├── FaceRecognizercpp # FaceNet recognition logic
+│   ├── ACLManagercpp    # Windows ACL integration
+│   ├── GUIcpp           # OpenCV-based GUI
 │── include/              # Header files
 │── models/               # YOLOv8 and FaceNet models
 │── cmake/                # CMake configuration
 │── assets/               # UI assets if needed
-│── README.md             # Project documentation
+│── READMEmd             # Project documentation
 ```
 
 ## Usage
 
-1. Run the executable.
-2. The application will detect and recognize faces.
-3. If the recognized face matches the stored identity, access is granted via ACL.
-4. The GUI will display authentication status.
+1 Run the executable
+2 The application will detect and recognize faces
+3 If the recognized face matches the stored identity, access is granted via ACL
+4 The GUI will display authentication status
 
 ## Contributing
 
-Feel free to fork the repository and submit pull requests with improvements.
+Feel free to fork the repository and submit pull requests with improvements
 
-## License
-
-This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-- OpenCV for computer vision capabilities.
-- YOLOv8 for fast face detection.
-- FaceNet for accurate facial recognition.
-- Windows ACL for system-level authentication.
+- OpenCV for computer vision capabilities
+- YOLOv8 for fast face detection
+- FaceNet for accurate facial recognition
+- Windows ACL for system-level authentication
 
 ---
 
