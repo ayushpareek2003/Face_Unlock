@@ -25,6 +25,12 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 - **FaceNet** (for recognition)
 - **Windows SDK** (for ACL integration)
 
+### How to build
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+
 ## Installation & Setup
 ### 1. Clone the Repository
 ```sh
