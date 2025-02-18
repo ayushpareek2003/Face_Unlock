@@ -9,10 +9,6 @@ infer_cuDNN::infer_cuDNN(const std::string pathToYolo,const std::string pathToFa
 	modelDetect.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
 	modelDetect.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
 
-	//modelDetect.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-	//modelDetect.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-
-
 	modelRecog.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
 	modelRecog.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
 
@@ -35,7 +31,7 @@ cv::Mat infer_cuDNN::faceROI(cv::Mat& inpFrame) {
 		return inpFrame;
 	}
 
-		cv::Mat temp = outputs[0].reshape(1, outputs[0].total() / 6);
+	cv::Mat temp = outputs[0].reshape(1, outputs[0].total() / 6);
 
 	return temp;
 }
@@ -83,57 +79,49 @@ int infer_cuDNN::instructionFrames(std::string ins)
 
 std::vector<float> infer_cuDNN::embGen(cv::Mat img)
 {
-	cv::Mat resized,normalised;
-	cv::resize(img, resized, cv::Size(160, 160));
+	cv::Mat resized;
+	cv::resize(img, resized, cv::Size(112, 112));
 
-	resized.convertTo(resized, CV_32F, 1.0 / 127.5, -1.0);
-	resized.convertTo(normalised, CV_32F, 1.0 / 127.5, -1.0);
+	cv::cvtColor(resized, resized, cv::COLOR_BGR2RGB);
+	
 
 	// Convert HWC (height, width, channels) to NCHW (batch size, channels, height, width)
-	cv::Mat blob = cv::dnn::blobFromImage(normalised, 1.0, cv::Size(160, 160), cv::Scalar(), true, false);
+	cv::Mat blob = cv::dnn::blobFromImage(resized, 1.0, cv::Size(112, 112), cv::Scalar(0,0,0), true, false);
 
 	// Set the blob as input to the model
 	modelRecog.setInput(blob);
 
 	// Forward pass through the network to get the embedding
-	cv::Mat embedding = modelRecog.forward();
+	cv::Mat output = modelRecog.forward();
 
-	// Convert the embedding to a vector
-	std::vector<float> embeddingVec;
-	embedding = embedding.reshape(1, 1); // Flatten the 128x1 embedding into a vector
-	embedding.copyTo(embeddingVec);
 
-	return embeddingVec;
+	return std::vector<float>(output.begin<float>(),output.end<float>());
 }
 
 
 
-bool infer_cuDNN::recogFace(cv::Mat& inp) {
+bool infer_cuDNN::recogFace(cv::Mat& inp,cv::Mat& src){
 	
 
-	cv::Mat source = cv::imread("D:\\PRojects\\Media_Face_ID\\FaceData.png");
+	/*cv::Mat source = cv::imread("D:\\PRojects\\Media_Face_ID\\FaceData.png");*/
 
 	std::vector<float> embeddingVec = embGen(inp);
 
-	std::vector<float> sourceEmb = embGen(source);
+	std::vector<float> sourceEmb = embGen(src);
 
-
-
-	
-
-	float sum = 0;
-	for (size_t i = 0; i < embeddingVec.size(); ++i) {
-		float diff = embeddingVec[i] - sourceEmb[i];
-		sum += diff * diff;
+	float dot = 0.0, normA = 0.0, normB = 0.0;
+	for (size_t i = 0; i < embeddingVec.size(); i++) {
+		dot += embeddingVec[i] * sourceEmb[i];
+		normA += embeddingVec[i] * embeddingVec[i];
+		normB += sourceEmb[i] * sourceEmb[i];
 	}
-	sum=sqrt(sum);
+	float finalScore= dot / (sqrt(normA) * sqrt(normB)); // Cosine similarity formula
 
-
-	if (sum < 0.8) {
+	std::cout<<finalScore<<std::endl;
+	if (finalScore > 0.8) {
 		return true;
 	}
 	return false;
-
 
 }
 
@@ -156,34 +144,35 @@ cv::Mat infer_cuDNN::unlockFace(int amount) {
 		cv::Mat temp = faceROI(inpFrame);
 		cv::Mat faceFinal;
 		for (int j = 0; j < temp.rows; j++) {
-
-			if (temp.at<float>(j, 4) > 0.5) {
-
+			//std::cout << temp.at<float>(j, 4) << std::endl;
+			if (temp.at<float>(j, 4) > 0.3) {
 				int x = static_cast<int>(temp.at<float>(j, 0) * inpFrame.cols);
 				int y = static_cast<int>(temp.at<float>(j, 1) * inpFrame.rows);
 				int X = static_cast<int>(temp.at<float>(j, 2) * inpFrame.cols);
 				int Y = static_cast<int>(temp.at<float>(j, 3) * inpFrame.rows);
 
+				int width = X - x;
+				int height = Y - y;
 
 				float shrinkFactor = 0.8;
+				int newWidth = static_cast<int>(width * shrinkFactor);
+				int newHeight = static_cast<int>(height * shrinkFactor);
 
-				int newWidth = static_cast<int>(X * shrinkFactor);
-				int newHeight = static_cast<int>(Y * shrinkFactor);
+				int newX = x + (width - newWidth) / 2;
+				int newY = y + (height - newHeight) / 2;
 
+				// Ensure coordinates are within the frame
+				newX = std::max(0, newX);
+				newY = std::max(0, newY);
+				newWidth = std::min(inpFrame.cols - newX, newWidth);
+				newHeight = std::min(inpFrame.rows - newY, newHeight);
 
-				int newX = x + (X - newWidth) / 2;
-				int newY = y + (Y - newHeight) / 2;
-
-				if (newX >= 0 && newY >= 0 && newWidth > 0 && newHeight > 0 &&
-					newX + newWidth <= inpFrame.cols && newY + newHeight <= inpFrame.rows) {
-
+				if (newWidth > 0 && newHeight > 0) {
 					faceFinal = inpFrame(cv::Rect(newX, newY, newWidth, newHeight)).clone();
 				}
 
 				cv::rectangle(inpFrame, cv::Point(newX, newY), cv::Point(newX + newWidth, newY + newHeight), cv::Scalar(0, 255, 0), 2);
-
 			}
-
 		}
 
 		cv::imshow("Face Data", inpFrame);
@@ -195,7 +184,7 @@ cv::Mat infer_cuDNN::unlockFace(int amount) {
 		}
 		else if (key == ' ') {
 
-			if (faceFinal.rows > 0 && amount) {
+			if (faceFinal.rows > 0) {
 				f = 1;
 				backupFace = faceFinal.clone();
 				cv::imshow("Selected Frame", faceFinal);
@@ -203,11 +192,8 @@ cv::Mat infer_cuDNN::unlockFace(int amount) {
 				if (amount==0) {
 					cv::imwrite("D:\\PRojects\\Media_Face_ID\\FaceData.png", backupFace);
 					
-				}
-		
-				
+				}	
 			}
-
 		}
 	}
 
@@ -216,6 +202,7 @@ cv::Mat infer_cuDNN::unlockFace(int amount) {
 	if (f == 1) {
 		cv::destroyWindow("Selected Frame");
 	}
+
 	return backupFace;
 
 }

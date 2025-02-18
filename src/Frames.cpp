@@ -19,15 +19,18 @@ int height;
 int width;
 
 
-std::string pathToLocked = "D:\\PRojects\\Media_Face_ID\\folder.txt";
-std::string pathToYolo = "D:\\FACE_DUMMY\\assets\\yolov8n-face.onnx";
-std::string pathToFacenet = "D:\\face_id_workshop\\faceNet.onnx";
+
+//change these according to you using cmake 
+std::string pathToLocked = "D:\\PRojects\\temp_work\\folder.txt";   
+std::string pathToYolo = "D:\\Models\\yolov8m-face-lindevs.onnx";
+std::string pathToFacenet = "D:\\Models\\arcface.onnx";           
 
 infer_cuDNN faceInfer(pathToYolo, pathToFacenet);
 
 
-
 int main() {
+    
+    
     fill();
     
 
@@ -166,32 +169,34 @@ void unLock()
         }
 
     }
+    cv::destroyWindow("Unlock");
 
-    //if (lockedFolder.find(pathFolder) == lockedFolder.end()){
-    //        // Raise  Error //
-    //}
-    //lockedFolder.erase(pathFolder);
+    if (lockedFolder.find(pathFolder) == lockedFolder.end()){
+        std::cout << "SOmething is found" << std::endl;
+        
+    }
+    lockedFolder.erase(pathFolder);
+
     int trys = 10;
 
     while (trys) {
 
         cv::Mat inp = faceInfer.unlockFace(1);
 
-        if (faceInfer.recogFace(inp)) {
+        if (faceInfer.recogFace(inp,inp)) {
             trys = 0;
             int status = unlockFolder(pathFolder);
+            std::cout << "performed" << " " << status << std::endl;
+            return ;
             //status wrong
 
         }
+
         trys--;
-        
-
+        std::cout << trys << std::endl;
+   
     }
-
-
-    
  
-  
 }
 
 bool folderExists(const std::string& path) {
@@ -268,10 +273,6 @@ void Lock()
     //cv::imshow("Face Unlock", backGround);
     //std::this_thread::sleep_for(std::chrono::seconds(2));
 
-
-    
-    
-
 }
 
 void fill() {
@@ -291,9 +292,6 @@ void fill() {
     }
     
 
-
-
-
 }
 
 void empty() {
@@ -312,7 +310,10 @@ void empty() {
         std::cerr << "Error opening file for writing!" << std::endl;
     }
 
+
+
 }
+
 
 
 
