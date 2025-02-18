@@ -1,11 +1,11 @@
 # FaceUnlock for Windows
 
 ## Overview
-FaceUnlock for Windows is a facial recognition-based authentication system built using **C++** It leverages **OpenCV (compiled with CUDA)** for real-time face detection and recognition, integrates **Access Control Lists (ACLs)** for security, and provides a **GUI using OpenCV** The detection model is **YOLOv8**, and recognition is handled using **FaceNet** The entire project follows an **Object-Oriented Programming (OOP)** approach and is managed using **CMake**
+FaceUnlock for Windows is a facial recognition-based authentication system built using **C++** It leverages **OpenCV (compiled with CUDA)** for real-time face detection and recognition, integrates **Access Control Lists (ACLs)** for security, and provides a **GUI using OpenCV** The detection model is **YOLOv8**, and recognition is handled using **ArcFace** The entire project follows an **Object-Oriented Programming (OOP)** approach and is managed using **CMake**
 
 ## Features
 - **Real-time Face Detection** using YOLOv8
-- **Face Recognition** using FaceNet
+- **Face Recognition** using ArcFace
 - **High-performance computation** with OpenCV compiled with CUDA
 - **Windows Access Control List (ACL) integration** for secure authentication
 - **Object-Oriented Codebase** for modular and scalable design
@@ -22,7 +22,7 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 - **CMake**
 - **OpenCV (compiled with CUDA)**
 - **YOLOv8** (for detection)
-- **FaceNet** (for recognition)
+- **ArcFace** (for recognition)
 - **Windows SDK** (for ACL integration)
 
 ## Installation & Setup
@@ -56,7 +56,7 @@ FaceUnlock-Windows/
 │── src/                  # Source Code (OOP-based)
 │   ├── Frames.cpp          # Entry point
 │   ├── Input_Box.cpp  # YOLOv8 face detection logic
-│   ├── infer_cuDNN.cpp # FaceNet recognition logic
+│   ├── infer_cuDNN.cpp # ArcFace recognition logic
 │   ├── modifyACL.cpp    # Windows ACL integration
 │── include/              # Header files
 │── cmake                 # CMake file
@@ -79,7 +79,7 @@ Feel free to fork the repository and submit pull requests with improvements
 
 - OpenCV for computer vision capabilities
 - YOLOv8 for fast face detection
-- FaceNet for accurate facial recognition
+- ArcFace for accurate facial recognition
 - Windows ACL for system-level authentication
 
 ---
