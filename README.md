@@ -28,8 +28,8 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 ## Installation & Setup
 ### 1 Clone the Repository
 ```sh
-git clone https://github.com/ayushpareek2003/face_unlock.git
-cd FaceUnlock-Windows
+git clone https://github.com/ayushpareek2003/Face_Unlock.git
+cd Face_Unlock
 ```
 
 ### 2 Build the Project
@@ -52,7 +52,7 @@ cmake --build  --config Release
 ## Project Structure
 
 ```
-FaceUnlock-Windows/
+Face_Unlock/
 │── src/                  # Source Code (OOP-based)
 │   ├── Frames.cpp          # Entry point
 │   ├── Input_Box.cpp  # YOLOv8 face detection logic
