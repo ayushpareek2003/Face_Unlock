@@ -14,7 +14,7 @@ public:
 
 	cv::Mat faceROI(cv::Mat& inpFrame);
 
-	bool recogFace(cv::Mat& inp);
+	bool recogFace(cv::Mat& inp,cv::Mat& src);
 
 	/*bool cosineSimi(cv::Mat& inp,cv::)*/
 
