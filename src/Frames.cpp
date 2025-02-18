@@ -30,10 +30,7 @@ infer_cuDNN faceInfer(pathToYolo, pathToFacenet);
 
 int main() {
     
-    
     fill();
-    
-
     mainScreen();
     empty();
     return 0;
@@ -46,18 +43,18 @@ void onMouseClick(int event, int x, int y, int flags, void* userdata) {
     if (event == cv::EVENT_LBUTTONDOWN) {
         cv::Point clickPoint(x, y);
 
-        if (button1.contains(clickPoint)) {
+        if (ADD/UPDATE.contains(clickPoint)) {
   
             Face_Data_Frame();
              
         }
-        else if (button2.contains(clickPoint)) {
+        else if (unLOCK.contains(clickPoint)) {
             cv::destroyWindow("Face ID");
             unLock();
             cv::destroyAllWindows();
             mainScreen();
         }
-        else if (button3.contains(clickPoint)) {
+        else if (LOCK.contains(clickPoint)) {
             cv::destroyWindow("Face ID");
             Lock();
             cv::destroyAllWindows();
@@ -66,7 +63,7 @@ void onMouseClick(int event, int x, int y, int flags, void* userdata) {
             
 
         }
-        else if (button4.contains(clickPoint)) {
+        else if (BACK.contains(clickPoint)) {
             std::cout << "Button 4 clicked!" << std::endl;
         }
     }
@@ -101,16 +98,16 @@ void mainScreen() {
         cv::Mat displayImage = image.clone();
 
 
-        rectangle(displayImage, button1, cv::Scalar(0, 0, 0), -1);
-        rectangle(displayImage, button2, cv::Scalar(0, 0, 0), -1);
-        rectangle(displayImage, button3, cv::Scalar(0, 0, 0), -1);
-        rectangle(displayImage, button4, cv::Scalar(0, 0, 0), -1);
+        rectangle(displayImage, ADD/UPDATE, cv::Scalar(0, 0, 0), -1);
+        rectangle(displayImage, unLOCK, cv::Scalar(0, 0, 0), -1);
+        rectangle(displayImage, LOCK, cv::Scalar(0, 0, 0), -1);
+        rectangle(displayImage, BACK, cv::Scalar(0, 0, 0), -1);
 
 
-        cv::putText(displayImage, "ADD/UPDATE Data", cv::Point(button1.x + 10, button1.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
-        cv::putText(displayImage, "Unlock", cv::Point(button2.x + 10, button2.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
-        cv::putText(displayImage, "Lock", cv::Point(button3.x + 10, button3.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
-        cv::putText(displayImage, "Back", cv::Point(button4.x + 10, button4.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
+        cv::putText(displayImage, "ADD/UPDATE Data", cv::Point(ADD/UPDATE.x + 10, ADD/UPDATE.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
+        cv::putText(displayImage, "Unlock", cv::Point(unLOCK.x + 10, unLOCK.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
+        cv::putText(displayImage, "Lock", cv::Point(LOCK.x + 10, LOCK.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
+        cv::putText(displayImage, "Back", cv::Point(BACK.x + 10, BACK.y + 25), cv::FONT_HERSHEY_COMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
       
         
         cv::imshow("Face ID", displayImage);
@@ -172,7 +169,7 @@ void unLock()
     cv::destroyWindow("Unlock");
 
     if (lockedFolder.find(pathFolder) == lockedFolder.end()){
-        std::cout << "SOmething is found" << std::endl;
+        return ;
         
     }
     lockedFolder.erase(pathFolder);
@@ -186,14 +183,14 @@ void unLock()
         if (faceInfer.recogFace(inp,inp)) {
             trys = 0;
             int status = unlockFolder(pathFolder);
-            std::cout << "performed" << " " << status << std::endl;
+      
             return ;
             //status wrong
 
         }
 
         trys--;
-        std::cout << trys << std::endl;
+       
    
     }
  
