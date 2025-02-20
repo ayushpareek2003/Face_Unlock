@@ -1,7 +1,7 @@
 # FaceUnlock for Windows
 
 ## Overview
-FaceUnlock for Windows is a facial recognition-based authentication system built using **C++** It leverages **OpenCV (compiled with CUDA)** for real-time face detection and recognition, integrates **Access Control Lists (ACLs)** for security, and provides a **GUI using OpenCV** The detection model is **YOLOv8**, and recognition is handled using **ArcFace** The entire project follows an **Object-Oriented Programming (OOP)** approach and is managed using **CMake**
+FaceUnlock for Windows is a facial recognition-based authentication system built using **C++** It leverages **OpenCV (compiled with CUDA and cuDNN)** for real-time face detection and recognition, integrates **Access Control Lists (ACLs)** for security, and provides a **GUI using OpenCV** The detection model is **YOLOv8**, and recognition is handled using **ArcFace** The entire project follows an **Object-Oriented Programming (OOP)** approach and is managed using **CMake**
 
 ## Features
 - **Real-time Face Detection** using YOLOv8
@@ -20,7 +20,7 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 ### Software & Libraries
 - **C++ (MSVC/MinGW compiler)**
 - **CMake**
-- **OpenCV (compiled with CUDA)**
+- **OpenCV (compiled with CUDA and cuDNN)**
 - **YOLOv8** (for detection)
 - **ArcFace** (for recognition)
 - **Windows SDK** (for ACL integration)
