@@ -14,6 +14,8 @@ FaceUnlock for Windows is a facial recognition-based authentication system built
 - **GUI interface** built with OpenCV
 - **CMake-based Build System** for easy compilation and deployment
 
+
+
 ## Requirements
 ### Hardware
 - Windows PC with **NVIDIA GPU** (for CUDA acceleration)
