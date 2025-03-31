@@ -56,13 +56,13 @@ cmake --build  --config Release
 
 ```
 Face_Unlock/
-│── src/                  # Source Code (OOP-based)
-│   ├── Frames.cpp          # Entry point
-│   ├── Input_Box.cpp  # YOLOv8 face detection logic
-│   ├── infer_cuDNN.cpp # ArcFace recognition logic
+│── src/                 # Source Code (OOP-based)
+│   ├── Frames.cpp       # Entry point
+│   ├── Input_Box.cpp    # YOLOv8 face detection logic
+│   ├── infer_cuDNN.cpp  # ArcFace recognition logic
 │   ├── modifyACL.cpp    # Windows ACL integration
-│── include/              # Header files
-│── cmake                 # CMake file
+│── include/             # Header files
+│── cmake                # CMake file
 │── READMEmd             # Project documentation
 ```
 
