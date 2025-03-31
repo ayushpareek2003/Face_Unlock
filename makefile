@@ -6,9 +6,10 @@ OPENCV_CFLAGS := $(shell pkg-config --cflags opencv4)
 OPENCV_LIBS := $(shell pkg-config --libs opencv4)
 
 
+### add your paths here ###
 PATH_TO_LOCKED ?= ""
 PATH_TO_YOLO ?= ""
-PATH_TO_FACENET ?= ""
+PATH_TO_FACENET ?= "" 
 
 DEFINES := -DPATH_TO_LOCKED=\"$(PATH_TO_LOCKED)\" \
            -DPATH_TO_YOLO=\"$(PATH_TO_YOLO)\" \
