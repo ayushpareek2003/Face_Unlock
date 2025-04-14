@@ -2,6 +2,9 @@ CXX := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra -O2
 
 
+
+
+
 OPENCV_CFLAGS := $(shell pkg-config --cflags opencv4)
 OPENCV_LIBS := $(shell pkg-config --libs opencv4)
 
